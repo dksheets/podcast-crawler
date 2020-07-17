@@ -25,10 +25,10 @@ function shouldUpdateToday(episodes) {
   let minDiff = Infinity;
   let mostRecent = moment(...episodes[0].pubDate);
   while (index < 5 && index < episodes.length) {
-    let currentEpisodeDate = moment(...episodes[index + 1].pubDate);
-    let nextEpisodeDate = moment(...episodes[index].pubDate);
+    let currentEpisodeDate = moment(...episodes[index].pubDate);
+    let prevEpisodeDate = moment(...episodes[index + 1].pubDate);
     let currentDiff = moment
-      .duration(nextEpisodeDate.diff(currentEpisodeDate))
+      .duration(currentEpisodeDate.diff(prevEpisodeDate))
       .as("days");
     minDiff = Math.min(minDiff, currentDiff);
     index++;
