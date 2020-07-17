@@ -4,24 +4,21 @@ const path = require("path");
 const updateRssData = require("./initRssData");
 const { promisify } = require("util");
 const readFile = promisify(fs.readFile);
+const errorManagement = require("./errorHandler");
 
 getChannels();
 
 async function getChannels() {
   const toUpdate = [];
-  try {
-    let channels = await readFile(path.resolve(__dirname, "channels.json"));
-    channels = JSON.parse(channels);
-    for (const title in channels) {
-      if (shouldUpdateToday(channels[title].episodes)) {
-        console.log("Checking for new episodes of " + title + " today");
-        toUpdate.push(channels[title].url);
-      }
+  let channels = await readFile(path.resolve(__dirname, "channels.json"));
+  channels = JSON.parse(channels);
+  for (const title in channels) {
+    if (shouldUpdateToday(channels[title].episodes)) {
+      console.log("Checking for new episodes of " + title + " today");
+      toUpdate.push(channels[title].url);
     }
-    await updateRssData(toUpdate);
-  } catch (e) {
-    console.log(e);
   }
+  await updateRssData(toUpdate);
 }
 
 function shouldUpdateToday(episodes) {
@@ -39,3 +36,11 @@ function shouldUpdateToday(episodes) {
   }
   return moment().isAfter(mostRecent.add(minDiff, "days"));
 }
+
+process.on("uncaughtException", (error) => {
+  errorManagement.handler.handleError(error);
+});
+
+process.on("unhandledRejection", (reason, p) => {
+  errorManagement.handler.handleError(error);
+});

@@ -7,33 +7,26 @@ const { promisify } = require("util");
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 const parseString = promisify(xml2js.parseString);
+const errorManagement = require("./errorHandler");
 
 updateRssData(RSS_URLS);
 
 async function updateRssData(urls) {
-  try {
-    let channels = await readFile(path.resolve(__dirname, "channels.json"));
-    channels = JSON.parse(channels);
-    await asyncForEach(urls, async (url) => {
-      await getRSSFeed(url, channels);
-    });
-    await writeFile(
-      path.resolve(__dirname, "channels.json"),
-      JSON.stringify(channels)
-    );
-  } catch (e) {
-    console.log(e);
-  }
+  let channels = await readFile(path.resolve(__dirname, "channels.json"));
+  channels = JSON.parse(channels);
+  await asyncForEach(urls, async (url) => {
+    await getRSSFeed(url, channels);
+  });
+  await writeFile(
+    path.resolve(__dirname, "channels.json"),
+    JSON.stringify(channels)
+  );
 }
 
 async function getRSSFeed(url, channels) {
-  try {
-    const xml = await axios(url);
-    const result = await parseString(xml.data);
-    setRSSData(result, url, channels);
-  } catch (e) {
-    console.log(e);
-  }
+  const xml = await axios(url);
+  const result = await parseString(xml.data);
+  setRSSData(result, url, channels);
 }
 
 function setRSSData(data, url, channels) {
@@ -55,5 +48,13 @@ async function asyncForEach(array, callback) {
     await callback(array[index], index, array);
   }
 }
+
+process.on("uncaughtException", (error) => {
+  errorManagement.handler.handleError(error);
+});
+
+process.on("unhandledRejection", (reason, p) => {
+  errorManagement.handler.handleError(error);
+});
 
 module.exports = updateRssData;
