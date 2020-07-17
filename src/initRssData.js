@@ -20,9 +20,13 @@ async function updateRssData(urls) {
 }
 
 async function getRSSFeed(url, channels) {
-  const xml = await axios(url);
-  const result = await parseString(xml.data);
-  setRSSData(result, url, channels);
+  try {
+    const xml = await axios(url);
+    const result = await parseString(xml.data);
+    setRSSData(result, url, channels);
+  } catch (e) {
+    // ignore
+  }
 }
 
 function setRSSData(data, url, channels) {
