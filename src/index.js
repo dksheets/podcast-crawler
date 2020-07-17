@@ -2,13 +2,15 @@ const moment = require("moment");
 const fs = require("fs");
 const path = require("path");
 const updateRssData = require("./initRssData");
+const { promisify } = require("util");
+const readFile = promisify(fs.readFile);
 
 getChannels();
 
 async function getChannels() {
   const toUpdate = [];
-  fs.readFile(path.resolve(__dirname, "channels.json"), (err, channels) => {
-    if (err) throw err;
+  try {
+    let channels = await readFile(path.resolve(__dirname, "channels.json"));
     channels = JSON.parse(channels);
     for (const title in channels) {
       if (shouldUpdateToday(channels[title].episodes)) {
@@ -16,8 +18,10 @@ async function getChannels() {
         toUpdate.push(channels[title].url);
       }
     }
-    updateRssData(toUpdate);
-  });
+    await updateRssData(toUpdate);
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 function shouldUpdateToday(episodes) {
