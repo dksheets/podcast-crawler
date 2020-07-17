@@ -1,0 +1,22 @@
+{
+  "name": "podcast-crawler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "init": "node initRssData.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "jsdom": "^16.3.0",
+    "moment": "^2.27.0",
+    "mongoose": "^5.9.24",
+    "xml2js": "^0.4.23"
+  }
+}
