@@ -1,15 +1,11 @@
 const axios = require("axios");
 const xml2js = require("xml2js");
-const RSS_URLS = require("./rssURLs");
 const fs = require("fs");
 const path = require("path");
 const { promisify } = require("util");
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 const parseString = promisify(xml2js.parseString);
-const errorManagement = require("./errorHandler");
-
-updateRssData(RSS_URLS);
 
 async function updateRssData(urls) {
   let channels = await readFile(path.resolve(__dirname, "channels.json"));
@@ -48,13 +44,5 @@ async function asyncForEach(array, callback) {
     await callback(array[index], index, array);
   }
 }
-
-process.on("uncaughtException", (error) => {
-  errorManagement.handler.handleError(error);
-});
-
-process.on("unhandledRejection", (reason, p) => {
-  errorManagement.handler.handleError(error);
-});
 
 module.exports = updateRssData;
