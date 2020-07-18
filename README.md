@@ -4,10 +4,6 @@ Clone the repo and install dependencies
 
 `npm i`
 
-Initialize the first batch of data from the list of RSS feeds
-
-`npm run init`
-
-Then retrieve new data from all podcasts expected to upload today
+Retrieve new data from all podcasts expected to upload today (will retrieve entire list on first run and populate channels.json)
 
 `npm start`
